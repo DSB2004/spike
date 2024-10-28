@@ -1,19 +1,10 @@
 "use client";
 import axios from "axios";
 import { useRouter } from "next/navigation";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import Cookies from "js-cookie";
-interface DataContext {
-  name: string;
-  balance: number;
-  fetchData: () => void;
-}
-interface JwtPayloadExtended extends JwtPayload {
-  id: string; // Adjust type based on your token structure
-}
 const Navbar = ({}) => {
-  const [name, setName] = useState("");
   const [balance, setBalance] = useState(0);
   const [decood, setDecood] = useState("");
   const router = useRouter();
@@ -37,7 +28,7 @@ const Navbar = ({}) => {
     setDecood(decood?.id);
 
     fetchData({ userId: decood?.id });
-  }, []);
+  }, [router]);
   return (
     <div className="h-14 w-screen bg-gray-900 flex justify-center items-center fixed">
       <div className="text-white flex justify-center items-center flex-col bg-green-40 0 ">

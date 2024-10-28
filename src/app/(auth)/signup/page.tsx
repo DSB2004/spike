@@ -7,7 +7,7 @@ import Cookies from "js-cookie";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 
-export function Signup() {
+function Signup() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");

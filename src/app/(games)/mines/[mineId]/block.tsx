@@ -1,6 +1,6 @@
 import axios from "axios";
 import React, { useState } from "react";
-
+type HandleEndFunction = (gameEnd: boolean) => void;
 const Block = ({
   x,
   y,
@@ -10,7 +10,7 @@ const Block = ({
   x: number;
   y: number;
   id: string;
-  handleEnd: Function;
+  handleEnd: HandleEndFunction;
 }) => {
   const select = async () => {
     const res = await axios.post("/api/mines/select", { id, x, y });
@@ -25,7 +25,9 @@ const Block = ({
   return (
     <div className="w-full h-full justify-center items-center">
       {opened ? (
-        <div className=" flex w-full h-full justify-center items-center">{bomb ? <Bomb /> : <Diamond />}</div>
+        <div className=" flex w-full h-full justify-center items-center">
+          {bomb ? <Bomb /> : <Diamond />}
+        </div>
       ) : (
         <div
           className="bg-gray-700 w-full h-full"

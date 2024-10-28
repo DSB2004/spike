@@ -9,8 +9,8 @@ export async function POST(req: NextRequest) {
     const range = [1, 2, 3, 4, 5];
     const bombs: { x: number; y: number }[] = [];
     // Create all possible unique coordinates (including pairs where x === y)
-    for (let x of range) {
-      for (let y of range) {
+    for (const x of range) {
+      for (const y of range) {
         coordinates.push({ x, y });
       }
     }

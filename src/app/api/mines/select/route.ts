@@ -2,17 +2,7 @@ import { PrismaClient } from "@prisma/client";
 import { JsonArray } from "@prisma/client/runtime/library";
 import { NextRequest, NextResponse } from "next/server";
 import { multiplier } from "../../mineMultipler";
-type Bomb = { x: number; y: number };
-interface Data {
-  bombs: Bomb[] | null; // Use null to account for cases where bombs might not be set
-  opened: number; // Add any other properties if needed
-  betAmout: number;
-}
 
-// Example response type
-interface ApiResponse {
-  data: Data; // or | undefined based on your API response
-}
 export async function POST(req: NextRequest) {
   const { id, x, y } = await req.json();
   const prisma = new PrismaClient();
@@ -54,7 +44,7 @@ export async function POST(req: NextRequest) {
 
   if (bombCount in multiplier) {
     const multi = multiplier[bombCount][openedCount];
-    const newAmt = data?.betAmount! * multi;
+    const newAmt = (data?.betAmount || 0) * multi;
     const upd = await prisma.mines.update({
       where: { id: id },
       data: { newBetAmount: newAmt, opened: { increment: 1 } },

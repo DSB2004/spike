@@ -1,56 +1,31 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from "react";
-import { Label } from "@/components/ui/label";
 import { useRouter } from "next/navigation";
 
 import Cookies from "js-cookie";
 import jwt from "jsonwebtoken";
 import axios from "axios";
-interface LargeTwoColorSliderProps {
-  min?: number;
-  max?: number;
-  step?: number;
-  defaultValue?: number;
-  defaultFixedValue?: number;
-  primaryColor?: string;
-  secondaryColor?: string;
-  onChange?: (value: number) => void;
-}
-interface JwtPayload {
-  id: string; // or whatever type it is
-  // Add other properties if needed
-}
-// Simulated API call
-const updateFixedValue = async (): Promise<number> => {
-  // Simulate API delay
-  return Math.random() * 100;
-};
 
-export default function LargeTwoColorSlider({
-  min = 0,
-  max = 100,
-  step = 0.05,
-  defaultValue = 50,
-  defaultFixedValue = 0,
-  primaryColor = "bg-blue-500",
-  secondaryColor = "bg-gray-300",
-  onChange,
-}: LargeTwoColorSliderProps) {
+interface JwtPayload {
+  id: string;
+}
+export default function LargeTwoColorSlider() {
+  const min = 0;
+  const max = 100;
+  const step = 0.05;
+  const defaultValue = 50;
+  const defaultFixedValue = 0;
   const [value, setValue] = useState(defaultValue);
   const [fixedValue, setFixedValue] = useState(defaultFixedValue);
   const [betAmt, setBetAmt] = useState(0);
-  const [isUpdating, setIsUpdating] = useState(false);
   const sliderRef = useRef<HTMLDivElement>(null);
   const isDragging = useRef(false);
-  const [data, setData] = useState<any>(null);
+  const [data, setData] = useState<string | null>(null); // Assuming userId is a string
+  // const [betResponse, setBetResponse] = useState<BetResponse | null>(null);
   const [multi, setMulti] = useState(0);
   const [balance, setBalance] = useState(0);
   const [succ, setSucc] = useState(true);
-  useEffect(() => {
-    onChange && onChange(value);
-  }, [value, onChange]);
-
   const handleMouseDown = (e: React.MouseEvent) => {
     e.preventDefault();
     isDragging.current = true;
@@ -82,7 +57,7 @@ export default function LargeTwoColorSlider({
     }
     const decood = jwt.decode(token!) as JwtPayload | null;
     console.log(decood?.id);
-    setData(decood?.id);
+    setData(decood?.id || "");
     const handleMouseUpGlobal = () => {
       isDragging.current = false;
     };
@@ -91,23 +66,12 @@ export default function LargeTwoColorSlider({
     return () => {
       document.removeEventListener("mouseup", handleMouseUpGlobal);
     };
-  }, []);
+  }, [router]);
 
   const getLeftPosition = (val: number) => {
     return ((val - min) / (max - min)) * 100;
   };
 
-  const handleUpdateFixedValue = async () => {
-    setIsUpdating(true);
-    try {
-      const newFixedValue = await updateFixedValue();
-      setFixedValue(newFixedValue);
-    } catch (error) {
-      console.error("Failed to update fixed value:", error);
-    } finally {
-      setIsUpdating(false);
-    }
-  };
   const bet = async () => {
     const res = await axios.post("/api/dice", {
       userId: data,
@@ -119,7 +83,7 @@ export default function LargeTwoColorSlider({
     // setBetAmt(res.data.)
     setMulti(res.data.multiplier);
     setBalance(res.data.balance);
-    setSucc(res.data.success)
+    setSucc(res.data.success);
   };
   return (
     <div className="w-screen h-screen flex flex-col items-center justify-center gap-10 bg-gray-800">
@@ -157,8 +121,10 @@ export default function LargeTwoColorSlider({
           Bet
         </button>
       </div>
-      <div className="text-3xl font-semibold" 
-      style={{ color: succ ? "green" : "red" }}>
+      <div
+        className="text-3xl font-semibold"
+        style={{ color: succ ? "green" : "red" }}
+      >
         Multiplier - {multi} Balance - {balance}
       </div>
       {/* <div className={succ ? "text-green-500" : "text-red-500"}>

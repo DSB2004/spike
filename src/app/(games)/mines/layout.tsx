@@ -4,7 +4,6 @@ import React, { useEffect, useState } from "react";
 import Cookies from "js-cookie";
 import jwt from "jsonwebtoken";
 import { useRouter } from "next/navigation";
-import Navbar from "@/components/ui/navbar";
 interface JwtPayload {
   id: string; // or whatever type it is
   // Add other properties if needed
@@ -14,7 +13,7 @@ const Layout = ({
 }: Readonly<{
   children: React.ReactNode;
 }>) => {
-  const [data, setData] = useState<any>(null);
+  const [data, setData] = useState<string>("");
   const [bombNo, setBombNo] = useState(3);
   const [betAmt, setBetAmt] = useState(0);
   const router = useRouter();
@@ -35,8 +34,8 @@ const Layout = ({
     }
     const decood = jwt.decode(token!) as JwtPayload | null;
     console.log(decood?.id);
-    setData(decood?.id);
-  }, []);
+    setData(decood?.id || "");
+  }, [router]);
   return (
     <div className="flex ">
       {/* <Navbar /> */}

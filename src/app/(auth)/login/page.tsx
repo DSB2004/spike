@@ -7,7 +7,7 @@ import Cookies from "js-cookie";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 
-export function Login() {
+function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const router = useRouter();
@@ -16,7 +16,7 @@ export function Login() {
     if (token) {
       router.replace("/dashboard");
     }
-  });
+  }, [router]);
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const res = await axios.post("/api/auth/login", { email, password });

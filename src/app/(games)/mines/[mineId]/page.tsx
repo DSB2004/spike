@@ -106,7 +106,8 @@ import axios from "axios";
 import Cookies from "js-cookie";
 import jwt, { JwtPayload } from "jsonwebtoken";
 
-const Page = () => { // Renamed from page to Page
+const Page = () => {
+  // Renamed from page to Page
   const grid = Array.from({ length: 5 }, (_, rowIndex) =>
     Array.from(
       { length: 5 },
@@ -117,7 +118,12 @@ const Page = () => { // Renamed from page to Page
   const { mineId } = useParams();
   const [data, setData] = useState<string | null>(null); // Specify type
   const [disable, setDisable] = useState<boolean>(false); // Specify type
-  const [res, setRes] = useState<{ multi: number; betAmt: number; opened: number; gameEnd: boolean } | null>(null); // Specify type
+  const [res, setRes] = useState<{
+    multi: number;
+    betAmt: number;
+    opened: number;
+    gameEnd: boolean;
+  } | null>(null); // Specify type
   const [loading, setLoading] = useState<boolean>(true); // Specify type
 
   const handleEnd = (data: boolean) => {
@@ -143,15 +149,16 @@ const Page = () => { // Renamed from page to Page
       const decoded = jwt.decode(token) as JwtPayload | null;
       console.log(decoded?.id);
       setData(decoded?.id || null);
-      fetchData(); 
+      fetchData();
     }
-  }, []); 
+  }, []);
   const Cashout = async () => {
     try {
       await axios.post("/api/mines/cashout", {
         userId: data,
         mineId: mineId,
       });
+      setDisable(true);
       fetchData();
     } catch (error) {
       console.error("Error during cashout:", error);
@@ -185,7 +192,11 @@ const Page = () => { // Renamed from page to Page
         )}
       </div>
       <div className="w-[65%] ">
-        <div className={`grid grid-cols-5 gap-4 p-6 ${disable ? "pointer-events-none " : ""}`}>
+        <div
+          className={`grid grid-cols-5 gap-4 p-6 ${
+            disable ? "pointer-events-none " : ""
+          }`}
+        >
           {grid.map((row, rowIndex) =>
             row.map((cell, colIndex) => (
               <div

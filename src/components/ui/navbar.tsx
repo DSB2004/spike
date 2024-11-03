@@ -7,28 +7,33 @@ import Cookies from "js-cookie";
 const Navbar = ({}) => {
   const [balance, setBalance] = useState(0);
   const [decood, setDecood] = useState("");
+  const [logged, setLogged] = useState(false);
   const router = useRouter();
 
   const fetchData = async ({ userId }: { userId: string }) => {
     const res = await axios.post("/api/navbar", {
       userId: userId,
     });
-    console.log(res.data.data.balance);
+    // console.log(res.data.data.balance);
     // setName(res.data.name);
-    setBalance(res.data.data.balance);
+    setBalance(res.data.data.balance || 0);
   };
   useEffect(() => {
     const token = Cookies.get("token");
     if (!token) {
       router.replace("login");
+    } else {
+      const decood = jwt.decode(token!) as JwtPayload | null;
+      console.log(decood?.id);
+      setDecood(decood?.id);
+      setLogged(true);
+      fetchData({ userId: decood?.id });
     }
-
-    const decood = jwt.decode(token!) as JwtPayload | null;
-    console.log(decood?.id);
-    setDecood(decood?.id);
-
-    fetchData({ userId: decood?.id });
   }, [router]);
+  const signOut = () => {
+    const signout = Cookies.remove("token");
+    console.log(signOut);
+  };
   return (
     <div className="h-14 w-screen bg-gray-900 flex justify-center items-center fixed">
       <div className="text-white flex justify-center items-center flex-col bg-green-40 0 ">
@@ -42,6 +47,16 @@ const Navbar = ({}) => {
       >
         🔃
       </button>
+      {logged && (
+        <button
+          className="text-2xl text-white"
+          onClick={() => {
+            signOut();
+          }}
+        >
+          Sign Out
+        </button>
+      )}
     </div>
   );
 };

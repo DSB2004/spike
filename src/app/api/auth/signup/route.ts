@@ -31,9 +31,10 @@ export async function POST(req: NextRequest) {
       { status: 200 }
     );
     respo.cookies.set("token", token, {
-      httpOnly: true,
-      sameSite: "lax",
+      httpOnly: false,
+      sameSite: "none",
       path: "/",
+      secure: true,
     });
     return respo;
   } catch (error) {

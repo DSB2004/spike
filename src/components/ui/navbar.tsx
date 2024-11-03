@@ -32,7 +32,7 @@ const Navbar = ({}) => {
   }, [router]);
   const signOut = () => {
     const signout = Cookies.remove("token");
-    console.log(signOut);
+    console.log(signout);
   };
   return (
     <div className="h-14 w-screen bg-gray-900 flex justify-center items-center fixed">

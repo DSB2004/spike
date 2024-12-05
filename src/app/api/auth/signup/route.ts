@@ -4,6 +4,9 @@ import jwt from "jsonwebtoken";
 import { NextRequest, NextResponse } from "next/server";
 const prisma = new PrismaClient();
 export async function POST(req: NextRequest) {
+  // console.log()
+
+
   const { email, password, name } = await req.json();
 
   try {
@@ -38,6 +41,7 @@ export async function POST(req: NextRequest) {
     });
     return respo;
   } catch (error) {
+    // console.log(error)
     return NextResponse.json(
       {
         error: error,

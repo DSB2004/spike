@@ -1,58 +1,39 @@
-"use client";
-import * as React from "react";
-import { cn } from "@/lib/utils";
-import { useMotionTemplate, useMotionValue, motion } from "framer-motion";
+"use client"
 
-const Input = React.forwardRef<HTMLInputElement, React.InputHTMLAttributes<HTMLInputElement>>(
-  ({ className, type, ...props }, ref) => {
-    const radius = 100; // change this to increase the radius of the hover effect
-    const [visible, setVisible] = React.useState(false);
+import {
+  InputHTMLAttributes, forwardRef, ReactNode, useState
+} from "react";
 
-    const mouseX = useMotionValue(0);
-    const mouseY = useMotionValue(0);
+interface IPROPS extends InputHTMLAttributes<HTMLInputElement> {
+  error?: string;
+}
+import { FaEye } from "react-icons/fa";
+const Input = forwardRef<HTMLInputElement, IPROPS>(({ className, error, type, ...props }, ref) => {
+  const [newType, changeType] = useState(type)
+  return (
+    <div className="relative w-full pb-3 flex gap-2 items-center">
+      <input
+        autoComplete="off"
+        spellCheck="false"
+        ref={ref}
+        type={newType}
+        className={`p-2 bg-transparent border-b-2 border-gray-800 outline-none focus:outline-none text-xs w-full transition-all duration-200 ${className}focus:border-white hover:border-white`}
+        {...props}
+      />
 
-    function handleMouseMove(event: React.MouseEvent<HTMLDivElement>) {
-      const { currentTarget, clientX, clientY } = event;
-      const { left, top } = currentTarget.getBoundingClientRect();
 
-      mouseX.set(clientX - left);
-      mouseY.set(clientY - top);
-    }
+      <p className="absolute -bottom-2 right-0 text-red-500" style={{ fontSize: ".7rem" }}>{error}</p>
 
-    return (
-      <motion.div
-        style={{
-          background: useMotionTemplate`
-            radial-gradient(
-              ${visible ? radius + "px" : "0px"} circle at ${mouseX}px ${mouseY}px,
-              var(--blue-500),
-              transparent 80%
-            )
-          `,
-        }}
-        onMouseMove={handleMouseMove}
-        onMouseEnter={() => setVisible(true)}
-        onMouseLeave={() => setVisible(false)}
-        className="p-[2px] rounded-lg transition duration-300 group/input"
-      >
-        <input
-          type={type}
-          className={cn(
-            `flex h-10 w-full border-none bg-gray-50 dark:bg-zinc-800 text-black dark:text-white shadow-input rounded-md px-3 py-2 text-sm  file:border-0 file:bg-transparent 
-            file:text-sm file:font-medium placeholder:text-neutral-400 dark:placeholder-text-neutral-600 
-            focus-visible:outline-none focus-visible:ring-[2px]  focus-visible:ring-neutral-400 dark:focus-visible:ring-neutral-600
-            disabled:cursor-not-allowed disabled:opacity-50
-            dark:shadow-[0px_0px_1px_1px_var(--neutral-700)]
-            group-hover/input:shadow-none transition duration-400`,
-            className
-          )}
-          ref={ref}
-          {...props}
+      {type === 'password' ? <>
+        < FaEye className={`fill-white transition-all duration-100 h-4 w-4 absolute right-2 top-2 ${newType === 'password' ? "opacity-65" : "opacity-35"}`}
+          onClick={() => changeType((prev) => (prev === 'password' ? 'text' : 'password'))}
         />
-      </motion.div>
-    );
-  }
-);
-Input.displayName = "Input";
+      </> : <></>
+      }
+    </div>
+  )
+});
 
-export { Input };
+
+Input.displayName = "Input";
+export default Input;

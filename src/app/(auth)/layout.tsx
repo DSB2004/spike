@@ -1,6 +1,7 @@
 import React, { ReactNode } from 'react'
 import Navbar from '@/components/navbar'
 import Image from 'next/image'
+import { Toaster } from '@/components/ui/toaster';
 import dashbord__bg__src from "@/assets/spike__bg.webp";
 export default function layout({ children }: { children: ReactNode }) {
     return (
@@ -15,7 +16,9 @@ export default function layout({ children }: { children: ReactNode }) {
                     layout="fill"
                     objectFit="cover"
                 />
+                <Toaster />
                 {children}
+
             </main>
         </>
     )

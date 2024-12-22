@@ -28,6 +28,7 @@ export default function RootLayout({
     <html lang="en">
       <body
         className={`${geistSans.variable} ${geistMono.variable} 
+          transition-all duration-200
           antialiased bg-gradient-to-b from-slate-900 to-black
            min-h-screen text-light-blue scrollbar-thin scrollbar-thumb-gray-500 scrollbar-track-transparent `}
       >

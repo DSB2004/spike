@@ -3,7 +3,7 @@ import React from "react";
 import Link from "next/link";
 import Form from "./form";
 import Google from "./google";
-function Signup() {
+function SignIn() {
   return <>
     <section className="flex-1 flex items-center gap-5 flex-col justify-center">
       <h1 className="opacity-40 font-black text-xl text-white">Welcome to Spike</h1>
@@ -26,4 +26,4 @@ function Signup() {
 
 }
 
-export default Signup;
+export default SignIn;

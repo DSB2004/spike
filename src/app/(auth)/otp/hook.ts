@@ -3,6 +3,7 @@ import OtpSchema, { OtpFormData } from './validator'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import OtpAction from './action';
+import { useToast } from '@/hooks/use-toast';
 
 export default function useHook() {
 
@@ -11,6 +12,7 @@ export default function useHook() {
         mode: "onChange"
     });
 
+    const { toast } = useToast()
     const handlePaste = useCallback((event: React.ClipboardEvent<HTMLFormElement>) => {
         event.preventDefault();
         const value = event.clipboardData.getData("text");
@@ -31,12 +33,23 @@ export default function useHook() {
 
 
     const onSubmit = async (data: OtpFormData) => {
-        const otp = Object.values(data).join("")
-        console.log("otp submitted", otp)
-        await OtpAction(otp)
-        reset()
+        const otp = Object.values(data).join("");
+        const err = await OtpAction(otp);
+        if (err) {
+            setError("root", {
+                message: err.msg,
+                type: "manual"
+            });
+            toast({
+                title: "Error occurred",
+                description: err.msg,
+                variant: "destructive",
+            });
 
-    }
+            return;
+        }
+        reset();
+    };
 
     useEffect(() => {
         if (isValid && !isSubmitting) {

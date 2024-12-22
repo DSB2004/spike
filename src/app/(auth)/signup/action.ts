@@ -6,9 +6,12 @@ import { NextResponse } from "next/server";
 import { generateTOTP } from "@/utils/handleOTP";
 import prisma from "@/lib/prisma";
 import { v4 } from "uuid";
-import { cookies } from "next/headers";
+import { cookies } from "next/headers"
+import { redirect, RedirectType } from "next/navigation";
+import { FormError } from "@/types";
+import { otp__type } from "@/types/constants";
+const USER_TIMEOUT = 300;
 
-const USER_TIMEOUT = 3600;
 
 const SignUpAction = async (data: SignUpFormData) => {
     // User will submit their info
@@ -17,9 +20,21 @@ const SignUpAction = async (data: SignUpFormData) => {
 
     const { name, email, password } = data;
 
-    // checking for user info
-    if (!name || !email || !password)
-        return NextResponse.json({ msg: "Field missing " }, { status: 400 });
+    const errors: FormError<SignUpFormData> = {};
+
+
+    if (!name) {
+        errors.email = { type: "required", message: "Invalid name" };
+    }
+    if (!email) {
+        errors.email = { type: "required", message: "Invalid email" };
+    }
+    if (!password) {
+        errors.password = { type: "required", message: "Invalid password" };
+    }
+    if (Object.keys(errors).length > 0) {
+        return errors;
+    }
 
     try {
         // checking if user exist
@@ -28,17 +43,18 @@ const SignUpAction = async (data: SignUpFormData) => {
                 email
             }
         })
-        if (checkUser) return NextResponse.json({ msg: "Account exist" }, { status: 400 })
+        if (checkUser) return { email: { type: "pattern", message: "Account already exist" } };
 
     }
     catch (err) {
-        return NextResponse.json({ msg: "Server side error" }, { status: 500 })
+        console.log(err)
+        redirect("/maintenance", RedirectType.push);
     }
 
     try {
         // setting up user info in redis
         const hashedPassword = await hashPassword(password);
-        await redis.set(`user-account:${email}`, JSON.stringify({ email, name, hashedPassword }));
+        await redis.set(`user-account:${email}`, JSON.stringify({ email, name, hashedPassword }), "EX", USER_TIMEOUT);
 
         // generating time based otp
         const otp_session = v4();
@@ -47,7 +63,9 @@ const SignUpAction = async (data: SignUpFormData) => {
 
         await redis.set(
             `otp-session:${otp_session}`,
-            JSON.stringify({ email, otp }),
+            JSON.stringify({
+                email, otp, type: otp__type.account
+            }),
             'EX', USER_TIMEOUT
         );
 
@@ -55,14 +73,19 @@ const SignUpAction = async (data: SignUpFormData) => {
 
         // mailing otp to user
 
-        return NextResponse.redirect("/otp", 200)
-
-
     }
     catch (err) {
-        return NextResponse.json({ msg: "Server side error" }, { status: 500 })
+        console.log(err)
+        redirect("/maintenance", RedirectType.push);
+    }
+
+    if ((await cookies()).get("otp_session") !== null) {
+        redirect("/otp", RedirectType.push);
     }
 
 }
 
 
+
+
+export default SignUpAction

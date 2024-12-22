@@ -9,7 +9,7 @@ export default function Form() {
     const { handlePaste, onSubmit, register, handleSubmit, errors, isLoading, isSubmitting } = useHook();
     return (
         <form onSubmit={handleSubmit(onSubmit)} className='flex gap-10 flex-col h-64 mt-12' onPaste={handlePaste}>
-            <div className='flex gap-4 items-center'>
+            <div className='flex gap-1 sm:gap-3 items-center'>
                 <OtpInput
                     {...register("otp__1")}
                     disabled={isLoading || isSubmitting}

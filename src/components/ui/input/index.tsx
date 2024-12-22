@@ -1,23 +1,24 @@
 "use client"
 
 import {
-  InputHTMLAttributes, forwardRef, ReactNode, useState
+  forwardRef
 } from "react";
 
-interface IPROPS extends InputHTMLAttributes<HTMLInputElement> {
-  error?: string;
-}
+import { IPROPS } from "./type";
 import { FaEye } from "react-icons/fa";
+import useHook from "./hook";
 const Input = forwardRef<HTMLInputElement, IPROPS>(({ className, error, type, ...props }, ref) => {
-  const [newType, changeType] = useState(type)
+  const { newType, handlePasswordVisibilty, handleKeyDown } = useHook(props)
+
   return (
     <div className="relative w-full pb-3 flex gap-2 items-center">
       <input
+        onKeyDown={handleKeyDown}
         autoComplete="off"
         spellCheck="false"
         ref={ref}
         type={newType}
-        className={`p-2 bg-transparent border-b-2 border-gray-800 outline-none focus:outline-none text-xs w-full transition-all duration-200 ${className}focus:border-white hover:border-white`}
+        className={`p-2 bg-transparent border-b-2 border-gray-800 outline-none focus:outline-none text-xs w-full transition-all duration-200 ${className}focus:border-white hover:border-white ${error ? "border-red-600" : ""}`}
         {...props}
       />
 
@@ -26,7 +27,7 @@ const Input = forwardRef<HTMLInputElement, IPROPS>(({ className, error, type, ..
 
       {type === 'password' ? <>
         < FaEye className={`fill-white transition-all duration-100 h-4 w-4 absolute right-2 top-2 ${newType === 'password' ? "opacity-65" : "opacity-35"}`}
-          onClick={() => changeType((prev) => (prev === 'password' ? 'text' : 'password'))}
+          onClick={handlePasswordVisibilty}
         />
       </> : <></>
       }
